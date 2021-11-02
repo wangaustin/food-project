@@ -3,8 +3,8 @@ DROP DATABASE IF EXISTS RecipeDB;
 CREATE DATABASE RecipeDB;
 USE RecipeDB;
 
-DROP TABLE IF EXISTS mega_recipe;
-CREATE TABLE IF NOT EXISTS mega_recipe(
+DROP TABLE IF EXISTS recipe_mega;
+CREATE TABLE IF NOT EXISTS recipe_mega(
 	recipeID					INT	UNIQUE,
     recipe_name					VARCHAR(100),
     authorID					INT UNIQUE,
@@ -38,12 +38,37 @@ CREATE TABLE IF NOT EXISTS mega_recipe(
 
 
 LOAD DATA LOCAL INFILE '/Users/austin/Downloads/recipes.csv'
-INTO TABLE mega_recipe
+INTO TABLE recipe_mega
 FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES;
 
 
+DROP TABLE IF EXISTS review_mega;
+CREATE TABLE IF NOT EXISTS review_mega (
+	review_id INT,
+    recipe_id INT,
+    author_id INT,
+    author_name VARCHAR(50),
+    rating TINYINT,
+    review VARCHAR(1000),
+    date_submitted DATETIME,
+    date_modified DATETIME,
+    PRIMARY KEY(review_id)
+) ENGINE = INNODB;
+
+LOAD DATA INFILE 'reviews.csv' 
+INTO TABLE review_mega
+FIELDS TERMINATED BY ','
+OPTIONALLY ENCLOSED BY '"'
+IGNORE 1 LINES;
+
+
 SELECT *
-FROM mega_recipe;
+FROM recipe_mega
+LIMIT 100;
+
+SELECT *
+FROM review_mega
+LIMIT 100;
