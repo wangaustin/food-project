@@ -1,7 +1,7 @@
 USE recipedb;
 
+-- stored procedure that shows the recipe search results by time in ASC/DESC order
 DROP PROCEDURE IF EXISTS showbytime;
-
 DELIMITER //
 CREATE PROCEDURE showbytime(IN ordering INT, IN num_rows INT)
 BEGIN
@@ -21,8 +21,9 @@ END IF;
 END//
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS showbycalories;
 
+-- stored procedure that shows the recipe search results by calories in ASC/DESC order
+DROP PROCEDURE IF EXISTS showbycalories;
 DELIMITER //
 CREATE PROCEDURE showbycalories(IN ordering INT, IN num_rows INT)
 BEGIN
@@ -42,8 +43,9 @@ END IF;
 END//
 DELIMITER ;
 
-DROP PROCEDURE IF EXISTS showreviews;
 
+-- stored procedure that shows the reviews on a particular recipe
+DROP PROCEDURE IF EXISTS showreviews;
 DELIMITER //
 CREATE PROCEDURE showreviews(IN current_recipe_id INT)
 BEGIN
@@ -55,6 +57,21 @@ WHERE recipe_id = current_recipe_id;
 END//
 DELIMITER ;
 
+-- stored procedure that search by author name
+DROP PROCEDURE IF EXISTS showforauthor;
+DELIMITER //
+CREATE PROCEDURE showforauthor(IN author_name VARCHAR(50))
+BEGIN
+
+SELECT *
+FROM recipe r
+	JOIN author a ON r.author_id = a.author_id
+WHERE a.author_name LIKE CONCAT('%', author_name, '%');
+
+END//
+DELIMITER ;
+
 CALL showbytime(1, 5);
 CALL showbycalories(0, 10);
 CALL showreviews(38);
+CALL showforauthor('Sue M.');
