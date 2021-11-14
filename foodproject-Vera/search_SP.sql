@@ -3,17 +3,19 @@ USE recipedb;
 -- stored procedure that shows the recipe search results by time in ASC/DESC order
 DROP PROCEDURE IF EXISTS showbytime;
 DELIMITER //
-CREATE PROCEDURE showbytime(IN ordering INT, IN num_rows INT)
+CREATE PROCEDURE showbytime(IN keyword VARCHAR(50), IN ordering INT, IN num_rows INT)
 BEGIN
 
 IF ordering = 1 THEN
 	SELECT *
 	FROM recipe 
+    WHERE recipe_name LIKE CONCAT('%', keyword, '%')
 	ORDER BY date_published
 	LIMIT num_rows;
 ELSEIF ordering = 0 THEN
 	SELECT *
 	FROM recipe 
+    WHERE recipe_name LIKE CONCAT('%', keyword, '%')
 	ORDER BY date_published
 	LIMIT num_rows;
 END IF;
@@ -25,17 +27,19 @@ DELIMITER ;
 -- stored procedure that shows the recipe search results by calories in ASC/DESC order
 DROP PROCEDURE IF EXISTS showbycalories;
 DELIMITER //
-CREATE PROCEDURE showbycalories(IN ordering INT, IN num_rows INT)
+CREATE PROCEDURE showbycalories(IN keyword VARCHAR(50), IN ordering INT, IN num_rows INT)
 BEGIN
 
 IF ordering = 1 THEN
 	SELECT *
 	FROM recipe 
+    WHERE recipe_name LIKE CONCAT('%', keyword, '%')
 	ORDER BY calories
 	LIMIT num_rows;
 ELSEIF ordering = 0 THEN
 	SELECT *
 	FROM recipe 
+    WHERE recipe_name LIKE CONCAT('%', keyword, '%')
 	ORDER BY calories DESC
 	LIMIT num_rows;
 END IF;
@@ -71,7 +75,7 @@ WHERE a.author_name LIKE CONCAT('%', author_name, '%');
 END//
 DELIMITER ;
 
-CALL showbytime(1, 5);
-CALL showbycalories(0, 10);
+CALL showbytime('Blueberry', 1, 5);
+CALL showbycalories('Blueberry', 0, 10);
 CALL showreviews(38);
 CALL showforauthor('Sue M.');
