@@ -3,7 +3,7 @@ USE recipedb;
 -- stored procedure that shows adds an author to the database
 DROP PROCEDURE IF EXISTS addauthor;
 DELIMITER //
-CREATE PROCEDURE addauthor(IN author_name_in VARCHAR(100))
+CREATE PROCEDURE addauthor(IN author_name_in VARCHAR(50))
 BEGIN
 
 DECLARE authorID INT;
