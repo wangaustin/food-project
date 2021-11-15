@@ -23,6 +23,21 @@ SELECT CONCAT("Author successfully added. Your userid is ", author_id_str) AS me
 END//
 DELIMITER ;
 
+-- trigger that truncates the new author name to 50 characters before insert
+DROP TRIGGER IF EXISTS author_before_insert
+DELIMITER //
+CREATE TRIGGER author_before_insert
+BEFORE INSERT
+ON author
+FOR EACH ROW
+BEGIN
+IF LENGTH(NEW.author_name) > 50 THEN
+	SET NEW.author_name = CONVERT(New.author_name, CHAR(50));
+END IF;
+
+END //
+DELIMITER ;
+
 
 DELETE FROM author WHERE author_id = 2002901948;
 
