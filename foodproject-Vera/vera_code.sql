@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS review (
 	review_id INT AUTO_INCREMENT,
     recipe_id INT NOT NULL,  -- not null because review must be made on existing recipes
     author_id INT NOT NULL,  -- author_id must be provided
-    rating TINYINT,
+    rating TINYINT CHECK (rating IN (0, 1, 2, 3, 4, 5)),
     review VARCHAR(5000),
     date_submitted DATETIME,
     date_modified DATETIME,
@@ -194,6 +194,4 @@ SELECT COUNT(*) FROM recipedb.author AS count_author; -- 299880
 
 
     
-
-
 
