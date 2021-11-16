@@ -40,16 +40,16 @@ END //
 DELIMITER ;
 
 CALL add_author('Vera'); -- 2002901951
+CALL add_author('Austin'); -- 2002901952
 SELECT * FROM author ORDER BY author_id DESC;
 DELETE FROM author WHERE author_id = 2002901949;
-
 
 -- stored procedure that adds a recipe to the database
 -- default values will be passed in front-end code
 DROP PROCEDURE IF EXISTS add_recipe;
 DELIMITER //
 CREATE PROCEDURE add_recipe(IN recipe_name_in VARCHAR(50),  -- NOT NULL
-						   IN author_id_in INT,  -- NOT NULL
+						   IN author_id_in INT,  -- NOT NULL fk
                            IN cook_time_in VARCHAR(10), 
                            IN prep_time_in VARCHAR(10),					
                            IN total_time_in VARCHAR(10), 
@@ -78,7 +78,6 @@ BEGIN
 
 	DECLARE sql_error INT DEFAULT FALSE;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET sql_error = TRUE;
-	-- START TRANSACTION;
 
 	INSERT INTO recipe(recipe_name, author_id, cook_time, prep_time,
 						total_time, date_published, recipe_description, image_url, 
@@ -95,10 +94,8 @@ BEGIN
 			recipe_servings_in, recipe_yield_in, recipe_instructions_in);
 	
 	IF sql_error = FALSE THEN
-	-- COMMIT;
 	SELECT 'Recipe successfully added!';
 	ELSE 
-	-- ROLLBACK;
 	SELECT 'Recipe not added. Please check the info you entered. ';
 	END IF;
 
@@ -113,7 +110,74 @@ SELECT CONVERT(NOW(), DATETIME) FROM recipe LIMIT 10;
 CALL add_recipe ('Xiaomianbao', 2002901951, '', '', '', 'Feichang Haochi de Xiaomianbao', 
 				 '', '', '', '', '', 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1, '', '');
                  
-SELECT recipe_id, recipe_name, author_id FROM recipe ORDER BY recipe_id DESC;
-SELECT *, COUNT(*) FROM recipe WHERE recipe_name = 'Xiaomianbao';
+SELECT recipe_id, recipe_name, author_id FROM recipe ORDER BY recipe_id DESC;  -- 541386 for 'Xiaomianbao'
+SELECT *, COUNT(*) FROM recipe WHERE recipe_name = 'Xiaomianbao'; 
 DELETE FROM recipe WHERE recipe_name = 'Xiaomianbao';
 
+
+-- transaction and stored procedure that adds a review to the database
+DROP PROCEDURE IF EXISTS add_review;
+DELIMITER //
+CREATE PROCEDURE add_review(IN recipe_id_in INT, -- entered at front-end, NOT NULL fk
+                            IN author_id_in INT, -- NOT NULL fk
+                            IN rating_in TINYINT, 
+                            IN review_in VARCHAR(5000)
+                            -- date_submitted, this attribute does not need user input
+					        -- date_modified, this attribute does not need user input
+                            )
+BEGIN
+
+	DECLARE total_rating INT;
+    DECLARE num_rating INT;
+	DECLARE sql_error INT DEFAULT FALSE;
+	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET sql_error = TRUE;
+    START TRANSACTION;
+    
+	INSERT INTO review(recipe_id, author_id, rating, 
+					   review, date_submitted, date_modified)
+	VALUES (recipe_id_in, author_id_in, rating_in, review_in, 
+            CONVERT(NOW(), DATETIME), CONVERT(NOW(), DATETIME));
+        
+	-- increment review_count in recipe table
+	UPDATE recipe
+    SET review_count = review_count + 1
+    WHERE recipe_id = recipe_id_in;
+    
+    -- update aggregated_rating in recipe table
+    SET total_rating = 
+		(SELECT SUM(rating)
+         FROM review
+         WHERE recipe_id = recipe_id_in);
+         
+	SET num_rating =
+		(SELECT COUNT(rating)
+         FROM review
+         WHERE recipe_id = recipe_id_in);
+    
+    -- round average rating to the nearest 0.5
+    UPDATE recipe
+    SET aggregated_rating = ROUND(CEILING(FLOOR((total_rating / num_rating) * 4) / 2)/2, 2)
+    WHERE recipe_id = recipe_id_in;
+            
+	IF sql_error = FALSE THEN
+    COMMIT;
+	SELECT 'Review successfully added!';
+	ELSE 
+    ROLLBACK;
+	SELECT 'Review not added. Please check the info you entered. ';
+	END IF;
+
+END//
+DELIMITER ;
+
+-- Sample call to add_review
+CALL add_review(541386, 2002901952, 4, 'Soooo good!');
+CALL add_review(541386, 2002901952, 3, 'Soooo good!');
+CALL add_review(54138600, 2002901952, 4, 'Soooo good!');  -- should fail, fk recipe_id
+CALL add_review(541386, 200290195200, 4, 'Soooo good!');  -- should fail, fk author_id
+CALL add_review(541386, 2002901952, 6, 'Soooo good!'); -- should fail, CHECK CONSTRAINT for rating
+SELECT * FROM review ORDER BY review_id DESC;
+DELETE FROM review WHERE recipe_id = 541386;
+SELECT recipe_id, recipe_name, author_id, aggregated_rating, review_count
+FROM recipe WHERE recipe_id = 541386;
+UPDATE recipe SET review_count = 1 WHERE recipe_id = 541386;
