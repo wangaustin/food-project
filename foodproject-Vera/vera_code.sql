@@ -115,12 +115,12 @@ CREATE TABLE IF NOT EXISTS recipe (
     prep_time					VARCHAR(10),
     total_time					VARCHAR(10),
     date_published				DATETIME,
-    recipe_description			VARCHAR(400),
-    image_url					VARCHAR(100),
+    recipe_description			VARCHAR(5000),
+    image_url					VARCHAR(1000),
     recipe_category				VARCHAR(20),
-    keywords					VARCHAR(400),
-    recipe_ingredient_quantity	VARCHAR(400),
-    recipe_ingredient_parts		VARCHAR(400),
+    keywords					VARCHAR(1000),
+    recipe_ingredient_quantity	VARCHAR(1000),
+    recipe_ingredient_parts		VARCHAR(1000),
     aggregated_rating			DECIMAL(10, 2),
     review_count				INT,
     calories					DECIMAL(10, 2),
@@ -147,7 +147,7 @@ CREATE TABLE IF NOT EXISTS review (
     recipe_id INT NOT NULL,  -- not null because review must be made on existing recipes
     author_id INT NOT NULL,  -- author_id must be provided
     rating TINYINT,
-    review VARCHAR(1000),
+    review VARCHAR(5000),
     date_submitted DATETIME,
     date_modified DATETIME,
     PRIMARY KEY(review_id),
@@ -192,6 +192,8 @@ SELECT COUNT(*) FROM recipedb.recipe AS count_recipe; -- 522517
 SELECT COUNT(*) FROM recipedb.review AS count_review; -- 1401860
 SELECT COUNT(*) FROM recipedb.author AS count_author; -- 299880
 
---
+
     
+
+
 
