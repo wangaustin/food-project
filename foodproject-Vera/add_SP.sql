@@ -44,7 +44,7 @@ SELECT * FROM author ORDER BY author_id DESC;
 DELETE FROM author WHERE author_id = 2002901949;
 
 
--- transaction and stored procedure that add a recipe to the database
+-- stored procedure that adds a recipe to the database
 -- default values will be passed in front-end code
 DROP PROCEDURE IF EXISTS add_recipe;
 DELIMITER //
