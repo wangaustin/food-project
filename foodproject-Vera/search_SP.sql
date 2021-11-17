@@ -86,28 +86,23 @@ CALL show_for_author('Sue M.');
 -- view that shows the trending recipes (highly-rated or mostly-reviewed)
 DROP VIEW IF EXISTS trending_recipe;
 CREATE VIEW trending_recipe AS
-WITH highly_rated AS (
-	 SELECT rp.recipe_name, a.author_name, rp.recipe_description, 
+SELECT * 
+FROM 
+	((SELECT rp.recipe_name, a.author_name, rp.recipe_description, 
 		    rp.aggregated_rating AS average_rating, rp.calories
      FROM author a
 		JOIN recipe rp ON a.author_id = rp.author_id
 	 WHERE rp.review_count >= 5
      ORDER BY rp.aggregated_rating DESC
-	 LIMIT 50
-), mostly_reviewed AS (
-	SELECT rp.recipe_name, a.author_name, rp.recipe_description, 
+	 LIMIT 50)
+     UNION
+	(SELECT rp.recipe_name, a.author_name, rp.recipe_description, 
 		   rp.aggregated_rating AS average_rating, rp.calories
     FROM author a
 		JOIN recipe rp ON a.author_id = rp.author_id
 	WHERE rp.aggregated_rating >= 4.5
     ORDER BY rp.review_count DESC
-    LIMIT 50
-), union_tb AS (
-	SELECT * FROM highly_rated
-    UNION
-    SELECT * FROM mostly_reviewed
-)
-SELECT * FROM union_tb
+    LIMIT 50)) union_tb
 ORDER BY recipe_name;
 
 -- Sample select from view trending_recipes
@@ -142,4 +137,6 @@ ORDER BY author_name;
 
 -- Sample select from view top_author	
 SELECT * FROM top_author;
+
+
 
