@@ -1,6 +1,6 @@
 USE recipedb;
 
--- stored procedure that shows adds an author to the database
+-- stored procedure that adds an author to the database
 DROP PROCEDURE IF EXISTS add_author;
 DELIMITER //
 CREATE PROCEDURE add_author(IN author_name_in VARCHAR(50))
