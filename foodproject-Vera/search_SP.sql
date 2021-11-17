@@ -116,9 +116,10 @@ SELECT * FROM trending_recipe;
 
 -- view that shows the top authors who write the most recipes and have highest ratings
 DROP VIEW IF EXISTS top_author;
-CREATE VIEW top_author AS 
-WITH most_recipe AS (
-	SELECT a.author_name, 
+CREATE VIEW top_author AS
+SELECT *
+FROM 
+	((SELECT a.author_name, 
 		   COUNT(r.recipe_id) AS number_of_recipes, 
            ROUND(AVG(r.aggregated_rating), 1) AS average_rating
     FROM author a 
@@ -126,26 +127,19 @@ WITH most_recipe AS (
 	GROUP BY a.author_id
     HAVING average_rating >= 3
     ORDER BY number_of_recipes DESC
-    LIMIT 15
-), highest_rating AS (
-	SELECT a.author_name, 
+    LIMIT 15)
+    UNION
+    (SELECT a.author_name, 
 		   COUNT(r.recipe_id) AS number_of_recipes, 
            ROUND(AVG(r.aggregated_rating), 1) AS average_rating
     FROM author a
 		JOIN recipe r ON a.author_id = r.author_id
 	GROUP BY a.author_id
     HAVING number_of_recipes >= 20
-    ORDER BY average_rating
-    LIMIT 15
-), union_tb AS (
-	SELECT * FROM most_recipe
-    UNION 
-    SELECT * FROM highest_rating
-)
-SELECT *
-FROM union_tb 
+    ORDER BY average_rating DESC
+    LIMIT 15)) union_tb
 ORDER BY author_name;
 
 -- Sample select from view top_author	
-SELECT *, COUNT(*) FROM top_author;
+SELECT * FROM top_author;
 
