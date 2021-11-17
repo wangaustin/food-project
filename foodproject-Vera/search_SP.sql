@@ -49,14 +49,16 @@ DELIMITER ;
 
 
 -- stored procedure that shows the reviews on a particular recipe
-DROP PROCEDURE IF EXISTS showreviews;
+DROP PROCEDURE IF EXISTS show_reviews;
 DELIMITER //
-CREATE PROCEDURE showreviews(IN current_recipe_id INT)
+CREATE PROCEDURE show_reviews(IN current_recipe_id INT)
 BEGIN
 
-SELECT *
-FROM review
-WHERE recipe_id = current_recipe_id;
+SELECT r.review_id, r.recipe_id, a.author_id, a.author_name, 
+	   r.rating, r.review, r.date_submitted, r.date_modified
+FROM review r
+	JOIN author a ON r.author_id = a.author_id
+WHERE r.recipe_id = current_recipe_id;
 
 END//
 DELIMITER ;
