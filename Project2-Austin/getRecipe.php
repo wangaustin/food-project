@@ -86,14 +86,19 @@ if (isset($_POST['field_submit'])) {
 
 
   <form method="post" action="getRecipeByAuthor.php">
-      <input type="hidden" name="key" value=<?php echo $row["recipe_id"]; ?>>
-      <input type="submit" name="indiv_recipe" value="Search by Author Instead">
-    </form>
+    <input type="submit" name="indiv_recipe" value="Search by Author Instead">
+  </form>
+
+  <form method="post" action="topRecipes.php">
+    <input type="submit" name="indiv_recipe" value="Top Recipes">
+  </form>
+
 
   <?php
   if (isset($_POST['field_submit'])) {
   ?>
     <h2>Results</h2>
+
     <body>You searched for: "<?php echo $var_recipe_name ?>"</body><br>
 
     <body>Limit is: "<?php echo $var_recipe_limit ?>"</body><br>
