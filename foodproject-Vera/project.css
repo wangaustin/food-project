@@ -153,12 +153,12 @@ tbody tr:nth-of-type(even) {
 h1{
 	color:#000000;
 	text-align: center;
-	font: bold 50px Lucida Handwriting, sans-serif;
+	font: bold 50px Garamond, sans-serif;
 }
 
 
 h4 {
-	color: #858585;
+	color: #ffffff;
 	text-align: center;
 }
 
@@ -173,6 +173,7 @@ footer{
 }
 
 p {
+	font: bold 30px Garamond, sans-serif;
 	margin-left: auto;
 	margin-right: auto;
 	width: 600px;
