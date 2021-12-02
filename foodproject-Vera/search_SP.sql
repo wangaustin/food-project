@@ -5,19 +5,32 @@ DROP PROCEDURE IF EXISTS show_by_time;
 DELIMITER //
 CREATE PROCEDURE show_by_time(IN keyword VARCHAR(50), IN ordering INT, IN num_rows INT)
 BEGIN
-
-IF ordering = 1 THEN
-	SELECT *
-	FROM recipe 
-    WHERE recipe_name LIKE CONCAT('%', keyword, '%')
-	ORDER BY date_published
-	LIMIT num_rows;
-ELSEIF ordering = 0 THEN
-	SELECT *
-	FROM recipe 
-    WHERE recipe_name LIKE CONCAT('%', keyword, '%')
-	ORDER BY date_published DESC
-	LIMIT num_rows;
+IF num_rows = -1 THEN
+	IF ordering = 1 THEN
+		SELECT *
+		FROM recipe 
+		WHERE recipe_name LIKE CONCAT('%', keyword, '%')
+		ORDER BY date_published;
+	ELSEIF ordering = 0 THEN
+		SELECT *
+		FROM recipe 
+		WHERE recipe_name LIKE CONCAT('%', keyword, '%')
+		ORDER BY date_published DESC;
+	END IF;
+ELSE
+	IF ordering = 1 THEN
+		SELECT *
+		FROM recipe 
+		WHERE recipe_name LIKE CONCAT('%', keyword, '%')
+		ORDER BY date_published
+		LIMIT num_rows;
+	ELSEIF ordering = 0 THEN
+		SELECT *
+		FROM recipe 
+		WHERE recipe_name LIKE CONCAT('%', keyword, '%')
+		ORDER BY date_published DESC
+		LIMIT num_rows;
+	END IF;
 END IF;
 
 END//
@@ -78,6 +91,7 @@ END//
 DELIMITER ;
 
 CALL show_by_time('Blueberry', 1, 5);
+CALL show_by_time('Blueberry', 1, -1);
 CALL show_by_calories('Blueberry', 0, 10);
 CALL show_reviews(27430);
 CALL show_for_author('Sue M.');
@@ -137,6 +151,4 @@ ORDER BY author_name;
 
 -- Sample select from view top_author	
 SELECT * FROM top_author;
-
-
 
