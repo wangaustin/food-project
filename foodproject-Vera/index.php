@@ -16,6 +16,6 @@
       </ul>
     </div>
     <h1>Food N Recipes</h1>
-	<p>
+	<p>Explore our 500,000+ recipes. Start by searching for your favorite food!</p>
   </body>
 </html>
