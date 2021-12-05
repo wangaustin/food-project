@@ -8,12 +8,15 @@ CREATE PROCEDURE update_recipe(IN recipe_id_in INT,
 						   IN cook_time_in VARCHAR(10), 
                            IN prep_time_in VARCHAR(10),					
                            IN total_time_in VARCHAR(10), 
+                           -- date_published_in, this attribute does not need user input
                            IN recipe_description_in VARCHAR(5000), 
                            IN image_url_in VARCHAR(1000), 
 						   IN recipe_category_in VARCHAR(20), 
                            IN keywords_in VARCHAR(1000), 
                            IN recipe_ingredient_quantity_in VARCHAR(1000), 
 						   IN recipe_ingredient_parts_in VARCHAR(1000), 
+                           -- aggregated_rating, this attribute does not need user input
+                           -- review_count, this attribute does not need user input
 						   IN calories_in DECIMAL(10, 2), 
                            IN fat_content_in DECIMAL(10, 2), 
                            IN saturated_fat_in DECIMAL(10, 2), 
@@ -74,14 +77,20 @@ CALL update_recipe(541383, 'COOK', 'PREP', 'TOTOAL', 'MY_DESCRIPTION', 'URL',
 SELECT * FROM recipe ORDER BY recipe_id DESC;
 
 
--- stored procedure that updates a review in the database
+-- transaction and stored procedure that updates a review in the database
 DROP PROCEDURE IF EXISTS update_review;
 DELIMITER //
 CREATE PROCEDURE update_review(IN review_id_in INT,
 						   IN rating_in TINYINT, 
-                           IN review_in VARCHAR(5000))
+                           IN review_in VARCHAR(5000)
+                           -- date_submitted, this attribute does not need user input
+						   -- date_modified, this attribute does not need user input
+                           )
 BEGIN
 
+	DECLARE total_rating INT;
+    DECLARE num_rating INT;
+    DECLARE recipe_id_in INT;
 	DECLARE sql_error INT DEFAULT FALSE;
 	DECLARE CONTINUE HANDLER FOR SQLEXCEPTION SET sql_error = TRUE;
     START TRANSACTION;
@@ -91,6 +100,28 @@ BEGIN
 		review = review_in,
         date_modified = CONVERT(NOW(), DATETIME)
     WHERE review_id = review_id_in;
+    
+    -- find the corresponding recipe id
+    SET recipe_id_in =
+		(SELECT recipe_id
+         FROM review
+         WHERE review_id = review_id_in);
+    
+    -- update aggregated_rating in recipe table
+    SET total_rating = 
+		(SELECT SUM(rating)
+         FROM review
+         WHERE recipe_id = recipe_id_in);
+         
+	SET num_rating =
+		(SELECT COUNT(rating)
+         FROM review
+         WHERE recipe_id = recipe_id_in);
+         
+	-- round average rating to the nearest 0.5
+    UPDATE recipe
+    SET aggregated_rating = ROUND(CEILING(FLOOR((total_rating / num_rating) * 4) / 2)/2, 2)
+    WHERE recipe_id = recipe_id_in;
 	
 	IF sql_error = FALSE THEN
     COMMIT;
@@ -104,5 +135,7 @@ END//
 DELIMITER ;
 
 -- Sample call to update_review
-CALL update_review(2090347, 4, 'Not that good');
-SELECT * FROM review ORDER BY review_id DESC;
+CALL update_review(2090347, 0, 'Not that good');
+SELECT * FROM review ORDER BY review_id DESC LIMIT 20;
+SELECT * FROM review WHERE recipe_id = 352686 ORDER BY review_id;
+SELECT * FROM recipe WHERE recipe_id = 352686;
