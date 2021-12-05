@@ -93,7 +93,7 @@ DROP VIEW IF EXISTS trending_recipe;
 CREATE VIEW trending_recipe AS
 SELECT * 
 FROM 
-	((SELECT rp.recipe_name, a.author_name, rp.recipe_description, 
+	((SELECT rp.recipe_id, rp.recipe_name, a.author_name, rp.recipe_description, 
 		    rp.aggregated_rating AS average_rating, rp.calories
      FROM author a
 		JOIN recipe rp ON a.author_id = rp.author_id
@@ -101,7 +101,7 @@ FROM
      ORDER BY rp.aggregated_rating DESC
 	 LIMIT 50)
      UNION
-	(SELECT rp.recipe_name, a.author_name, rp.recipe_description, 
+	(SELECT rp.recipe_id, rp.recipe_name, a.author_name, rp.recipe_description, 
 		   rp.aggregated_rating AS average_rating, rp.calories
     FROM author a
 		JOIN recipe rp ON a.author_id = rp.author_id
