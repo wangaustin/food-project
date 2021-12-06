@@ -76,8 +76,10 @@ ON recipe
 FOR EACH ROW
 BEGIN
 	
+    SET SQL_SAFE_UPDATES = 0;
     DELETE FROM recipedb.review
     WHERE recipe_id = OLD.recipe_id;
+    SET SQL_SAFE_UPDATES = 1;
 
 END //
 DELIMITER ;
