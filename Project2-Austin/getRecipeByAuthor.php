@@ -21,6 +21,23 @@ if (isset($_POST['field_submit'])) {
 }
 ?>
 
+<!-- DELETE RECIPE -->
+<?php
+if (isset($_POST['event_delete_recipe'])) {
+    require_once("conn.php");
+    $var_recipe_name = $_POST['key'];
+    $query = "CALL delete_recipe(:recipe_name)";
+
+    try {
+        $prepared_stmt = $dbo->prepare($query);
+        $prepared_stmt->bindValue(':recipe_name', $var_recipe_name, PDO::PARAM_STR);
+        $result = $prepared_stmt->execute();
+    } catch (PDOException $ex) {
+        echo $sql . "<br>" . $error->getMessage();
+    }
+}
+?>
+
 <html>
 <!-- Any thing inside the HEAD tags are not visible on page.-->
 
@@ -40,7 +57,7 @@ if (isset($_POST['field_submit'])) {
         </ul>
     </div>
 
-    <h1>Search Recipe (Author)</h1>
+    <h1>Search Recipe</h1>
     <h4>What magic will you cook today?</h4>
 
     <form method="post" action="getRecipeByAuthor.php">
@@ -113,9 +130,9 @@ if (isset($_POST['field_submit'])) {
                                 </form>
                             </td>
                             <td>
-                                <form method="post" action="deleteRecipe.php">
+                                <form method="post">
                                     <input type="hidden" name="key" value=<?php echo $row["recipe_id"]; ?>>
-                                    <input type="submit" name="indiv_recipe" value="Delete">
+                                    <input type="submit" name="event_delete_recipe" value="Delete">
                                 </form>
                             </td>
                             <!-- End first row. Note this will repeat for each row in the $result variable-->
@@ -132,7 +149,7 @@ if (isset($_POST['field_submit'])) {
 
         <?php } else { ?>
             <!-- IF query execution resulted in error display the following message-->
-            <h3>Sorry, no results found for recipe "<?php echo $_POST['field_recipe_id']; ?>". </h3>
+            <h3 id="light">Sorry, no results found for recipe "<?php echo $_POST['field_recipe_id']; ?>". </h3>
     <?php }
     } ?>
 </body>
