@@ -193,5 +193,18 @@ SELECT COUNT(*) FROM recipedb.review AS count_review; -- 1401860
 SELECT COUNT(*) FROM recipedb.author AS count_author; -- 299880
 
 
-    
+-- presentation queries
+SELECT * FROM recipe WHERE recipe_name = 'Homemade Enchilada Sauce' AND author_id = 240552;
+
+SELECT rv.review_id, rv.author_id, rv.rating, rv.review, rv.date_submitted, rv.date_modified
+FROM recipe rc JOIN review rv ON rc.recipe_id = rv.recipe_id 
+WHERE rc.recipe_name = 'Homemade Enchilada Sauce' AND rc.author_id = 240552;
+
+CALL show_for_author('SweetsLady');
+
+SELECT * FROM recipe ORDER BY date_published DESC LIMIT 50;
+
+SELECT rv.review_id, rv.author_id, rv.rating, rv.review, rv.date_submitted, rv.date_modified
+FROM recipe rc JOIN review rv ON rc.recipe_id = rv.recipe_id 
+WHERE rc.recipe_name = "Austin and Mengyu's Recipe";  
 
