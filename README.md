@@ -2,6 +2,8 @@
 
 Food project for Fall 2021 Database Management CS3265 at Vanderbilt University, by Austin Wang and Vera Yang.
 
+**[Video Demo](https://www.youtube.com/watch?v=r91dv80Jpcc&t=80s)**
+
 ## Environment
 
 ### Required applications
